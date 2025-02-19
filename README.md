@@ -8,5 +8,5 @@
 
 ### how to use
 
-1. fill in with your api credentials
-2. run via crontab
+1. fill in with your api credentials inside `./dhammapada\_tweet\_bot\_credentials.py`
+2. run via crontab script `./dhammapada-tweet-bot.py`
