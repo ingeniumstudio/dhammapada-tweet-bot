@@ -2,15 +2,15 @@
 
 ### dependencies
 
-* https://github.com/ingeniumstudio/display-dhammapada
 * python 3
 * tweepy
 
 ### how to use
 
 0. clone the repository
-1. fill in with your api credentials inside `./dhammapada\_tweet\_bot\_credentials.py`
-2. run via crontab the script `./dhammapada-tweet-bot.py`
+1. install the dependencies (python 3 and `pip install tweepy`)
+2. fill in with your api credentials inside the file `dhammapada_tweet_bot_credentials.py`
+3. run via crontab the script `dhammapada-tweet-bot.py`
 
 ### `crontab -e` example
 
