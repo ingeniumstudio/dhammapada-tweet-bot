@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
 import os
-import subprocess
-import re
+import json
+import random
 
 import tweepy
 
 import dhammapada_tweet_bot_credentials as creds
 
 LAST_ID_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.lastid")
+SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
+DHAMMAPADA_JSON_FILEPATH = f"{SCRIPT_PATH}/dhammapada.json"
 
 
 def get_last_id(last_id_filepath=LAST_ID_FILEPATH):
@@ -27,44 +29,27 @@ def set_last_id(id, last_id_filepath=LAST_ID_FILEPATH):
     return last_id
 
 
-def remove_numbers_from_str(string):
-    space = ' '
-    comma = ','
-
-    new_string = re.sub(r'[0-9]+', '', string)
-    new_string = re.sub(r' ,', '', new_string)
-    new_string = re.sub(r'\n\W*\n\W*\n', '\n\n', new_string)
-    new_string = re.sub(r'\n\W*$', '', new_string)
-
-    return new_string.strip(f'{space}{comma}')
-
-
 def get_verse():
-    command = 'display-dhammapada'
-    verse = subprocess.run(command, stdin=subprocess.PIPE,
-                           stdout=subprocess.PIPE, text=True).stdout.strip()
-    return verse
+    with open(DHAMMAPADA_JSON_FILEPATH, "r") as dhammapada_json_file:
+        dhammapada_json = json.load(dhammapada_json_file)
+
+    keys = dhammapada_json.keys()
+    random_choice = random.choice(list(keys))
+
+    return dhammapada_json[random_choice]
 
 
-def get_numbers(string):
-    number_list = re.findall(r'\d+', string)
-    return number_list
-
-
-verse = get_verse()
-numbers = get_numbers(verse)
-number = "verse" if len(numbers) < 2 else "verses"
-verse_without_numbers = remove_numbers_from_str(verse)
-signature = f"— Dhammapada, {number} {', '.join(numbers)}"
+verse_numbers, verse = get_verse()
+verses = ", ".join([str(verse_number) for verse_number in verse_numbers])
+signature = f"— Dhammapada, {verses}"
 
 message = f"""\
-{verse_without_numbers}
+{verse}
 
 {signature} \
 """
 
 print(message)
-
 
 client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                        consumer_secret=creds.CONSUMER_SECRET,
