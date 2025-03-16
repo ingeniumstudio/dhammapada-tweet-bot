@@ -56,7 +56,6 @@ def get_verse():
 
     keys = dhammapada_json.keys()
     random_choice = random.choice(list(keys))
-    random_choice = '100'
 
     return dhammapada_json[random_choice]
 
