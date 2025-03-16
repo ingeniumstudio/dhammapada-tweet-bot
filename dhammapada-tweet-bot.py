@@ -36,7 +36,7 @@ def get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
     if not os.path.isfile(previous_ids_filepath):
         return None
     with open(previous_ids_filepath, "r") as lidfp:
-        previous_ids = lidfp.readlines()
+        previous_ids = [item.strip() for item in lidfp.readlines()]
     return previous_ids
 
 
@@ -56,6 +56,7 @@ def get_verse():
 
     keys = dhammapada_json.keys()
     random_choice = random.choice(list(keys))
+    random_choice = '100'
 
     return dhammapada_json[random_choice]
 
@@ -87,14 +88,11 @@ id_list = list()
 
 for idx, chunk in enumerate(chunks):
     if idx == 0:
-        #  response = client.create_tweet(text=message)
         response = client.create_tweet(text=chunk)
-        new_post_id = response.data['id']  # pyright: ignore
         id_list.append(response.data['id']) # pyright: ignore
     else:
         response = client.create_tweet(text=chunk,
-                                       in_reply_to_tweet_id=new_post_id)
-        new_post_id = response.data['id']  # pyright: ignore
+                                       in_reply_to_tweet_id=id_list[-1])
         id_list.append(response.data['id']) # pyright: ignore
 
 # id of the last tweet, to be deleted
@@ -104,7 +102,7 @@ if previous_ids:
         delete_response = client.delete_tweet(id=item)
         print(delete_response.data)  # pyright: ignore
 
-new_post_id = response.data['id']  # pyright: ignore
+#  new_post_id = response.data['id']  # pyright: ignore
 set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
 
 print(response.data)  # pyright: ignore
