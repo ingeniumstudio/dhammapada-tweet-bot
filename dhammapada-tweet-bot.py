@@ -12,6 +12,7 @@ import tweepy
 import dhammapada_tweet_bot_credentials as creds
 
 PREVIOUS_IDS_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.previous_ids")
+DEBUG_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.debug")
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DHAMMAPADA_JSON_FILEPATH = f"{SCRIPT_PATH}/dhammapada.json"
 
@@ -50,6 +51,11 @@ def set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
     return previous_ids
 
 
+def write_last_verse(verse, debug_file=DEBUG_FILEPATH):
+    with open(debug_file, "w") as debugfd:
+        debugfd.write(verse)
+
+
 def get_verse():
     with open(DHAMMAPADA_JSON_FILEPATH, "r") as dhammapada_json_file:
         dhammapada_json = json.load(dhammapada_json_file)
@@ -76,7 +82,7 @@ message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message)
 chunks = chunk_string_by_words(text=message_no_breaks, max_chars=270)
 
 print(message)
-
+write_last_verse(verse=message, debug_file=DEBUG_FILEPATH)
 
 client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                        consumer_secret=creds.CONSUMER_SECRET,
