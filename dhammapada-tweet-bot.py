@@ -79,7 +79,7 @@ message = f"""\
 # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
 message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message)
 
-chunks = chunk_string_by_words(text=message_no_breaks, max_chars=270)
+chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
 
 print(message)
 write_last_verse(verse=message, debug_file=DEBUG_FILEPATH)
