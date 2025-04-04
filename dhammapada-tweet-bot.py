@@ -81,7 +81,7 @@ message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message)
 
 chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
 
-print(message)
+#  print(message)
 write_last_verse(verse=message, debug_file=DEBUG_FILEPATH)
 
 client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
@@ -105,9 +105,9 @@ previous_ids = get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
 if previous_ids:
     for item in previous_ids:
         delete_response = client.delete_tweet(id=item)
-        print(delete_response.data)  # pyright: ignore
+        #  print(delete_response.data)  # pyright: ignore
 
 #  new_post_id = response.data['id']  # pyright: ignore
 set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
 
-print(response.data)  # pyright: ignore
+#  print(response.data)  # pyright: ignore
