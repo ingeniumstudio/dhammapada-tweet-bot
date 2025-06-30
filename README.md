@@ -4,13 +4,15 @@
 
 * python 3
 * tweepy
+* X/twitter api credentials
 
 ### how to use
 
 0. clone the repository
 1. install the dependencies (python 3 and `pip install tweepy`)
 2. fill in with your api credentials inside the file `dhammapada_tweet_bot_credentials.py`
-3. run via crontab the script `dhammapada-tweet-bot.py`
+3. rename the file `dhammapada_tweet_bot_credentials.py` to `secrets_xapi.py`
+4. run via crontab the script `dhammapada-tweet-bot.py`; you can follow the example below.
 
 ### `crontab -e` example
 

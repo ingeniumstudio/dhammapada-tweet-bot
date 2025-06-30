@@ -9,7 +9,8 @@ import re
 
 import tweepy
 
-import dhammapada_tweet_bot_credentials as creds
+#  import dhammapada_tweet_bot_credentials as creds
+import secrets_xapi as creds
 
 PREVIOUS_IDS_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.previous_ids")
 DEBUG_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.debug")
