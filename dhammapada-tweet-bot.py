@@ -68,7 +68,7 @@ def get_verse():
 
 
 verse_numbers, verse = get_verse()
-verses = ", ".join([str(verse_number) for verse_number in verse_numbers])
+verses = str(", ").join(list(map(str, verse_numbers)))
 signature = f"— Dhammapada {verses}"
 
 message = f"""\
