@@ -43,7 +43,8 @@ def get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
 
 
 def set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
-    ids = "\n".join([str(item) for item in id_list])
+    ids = str("\n").join(list(map(str, id_list)))
+    #  ids = "\n".join([str(item) for item in id_list])
 
     with open(previous_ids_filepath, "w") as lidfp:
         lidfp.write(ids)
