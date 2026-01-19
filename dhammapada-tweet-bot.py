@@ -82,13 +82,13 @@ padding = pad_char * pad_size
 message_twitter = f"""\
 {verse}
 
-{signature} \
+{signature}\
 """
 
 message_local = f"""\
 {verse}
 
-{padding}{signature} \
+{padding}{signature}\
 """
 
 # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
