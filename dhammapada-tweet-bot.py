@@ -49,9 +49,9 @@ def set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
     return previous_ids
 
 
-def write_last_verse(verse, debug_file=LAST_VERSE_FILEPATH):
-    with open(debug_file, "w") as debugfd:
-        debugfd.write(verse)
+def write_last_verse(verse, last_verse_file=LAST_VERSE_FILEPATH):
+    with open(last_verse_file, "w") as fd:
+        fd.write(verse)
 
 
 def get_verse():
@@ -79,18 +79,24 @@ pad_size = verse_lenght - signature_lenght
 pad_char = '\u0020'  # space character
 padding = pad_char * pad_size
 
-message = f"""\
+message_twitter = f"""\
+{verse}
+
+{signature} \
+"""
+
+message_local = f"""\
 {verse}
 
 {padding}{signature} \
 """
 
 # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
-message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message)
+message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
 
 chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
 
-write_last_verse(verse=message, debug_file=LAST_VERSE_FILEPATH)
+write_last_verse(verse=message_local, last_verse_file=LAST_VERSE_FILEPATH)
 
 client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                        consumer_secret=creds.CONSUMER_SECRET,
