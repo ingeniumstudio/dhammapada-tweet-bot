@@ -63,15 +63,26 @@ def get_verse():
 
     return dhammapada_json[random_choice]
 
+def text_width(text):
+    lines = text.split('\n')
+    biggest_line_lenght = max(map(len, lines))
+
+    return biggest_line_lenght
 
 verse_numbers, verse = get_verse()
 verses = str(", ").join(list(map(str, verse_numbers)))
 signature = f"— Dhammapada {verses}"
 
+verse_lenght = text_width(text=verse)
+signature_lenght = len(signature)
+pad_size = verse_lenght - signature_lenght
+pad_char = '\u0020'  # space character
+padding = pad_char * pad_size
+
 message = f"""\
 {verse}
 
-{signature} \
+{padding}{signature} \
 """
 
 # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
