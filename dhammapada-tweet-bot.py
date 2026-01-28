@@ -73,11 +73,11 @@ verse_numbers, verse = get_verse()
 verses = str(", ").join(list(map(str, verse_numbers)))
 signature = f"— Dhammapada {verses}"
 
-verse_lenght = text_width(text=verse)
+line_size = text_width(text=verse)
 signature_lenght = len(signature)
-pad_size = verse_lenght - signature_lenght
-pad_char = '\u0020'  # space character
-padding = pad_char * pad_size
+#  pad_size = verse_lenght - signature_lenght
+#  pad_char = '\u0020'  # space character
+#  padding = pad_char * pad_size
 
 message_twitter = f"""\
 {verse}
@@ -85,11 +85,21 @@ message_twitter = f"""\
 {signature}\
 """
 
+#  message_local = f"""\
+#  {verse}
+#
+#  {padding}{signature}\
+#  """
 message_local = f"""\
 {verse}
 
-{padding}{signature}\
+{signature:>{line_size}}\
 """
+
+if os.environ['DEBUG']:
+    print("message_twitter", message_twitter, sep="\n\n", end="\n\n")
+    print("message_local", message_local, sep="\n\n", end="\n\n")
+    exit(0)
 
 # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
 message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
