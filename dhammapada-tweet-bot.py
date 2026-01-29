@@ -76,8 +76,8 @@ def set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
     return ids
 
 
-def write_last_verse(verse, verse_file=VERSE_FILEPATH):
-    """Writes de current verse being posted to the file in
+def write_verse(verse, verse_file=VERSE_FILEPATH):
+    """Writes the current verse being posted to the file in
            `VERSE_FILEPATH`
     """
 
@@ -139,7 +139,7 @@ message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
 
 chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
 
-write_last_verse(verse=message_local, verse_file=VERSE_FILEPATH)
+write_verse(verse=message_local, verse_file=VERSE_FILEPATH)
 
 client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                        consumer_secret=creds.CONSUMER_SECRET,
