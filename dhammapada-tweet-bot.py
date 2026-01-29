@@ -9,6 +9,8 @@ import tweepy
 
 import secrets_xapi as creds
 
+DEBUG = True if os.environ.get('DEBUG') else False
+
 PREVIOUS_IDS_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.previous_ids")
 LAST_VERSE_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.txt")
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -88,7 +90,7 @@ message_local = f"""\
 {signature:>{line_size}}\
 """
 
-if os.environ['DEBUG']:
+if DEBUG:
     print("message_twitter", message_twitter, sep="\n\n", end="\n\n")
     print("message_local", message_local, sep="\n\n", end="\n\n")
     exit(0)
