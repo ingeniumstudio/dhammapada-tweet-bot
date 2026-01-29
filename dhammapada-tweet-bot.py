@@ -75,9 +75,6 @@ signature = f"— Dhammapada {verses}"
 
 line_size = text_width(text=verse)
 signature_lenght = len(signature)
-#  pad_size = verse_lenght - signature_lenght
-#  pad_char = '\u0020'  # space character
-#  padding = pad_char * pad_size
 
 message_twitter = f"""\
 {verse}
@@ -85,11 +82,6 @@ message_twitter = f"""\
 {signature}\
 """
 
-#  message_local = f"""\
-#  {verse}
-#
-#  {padding}{signature}\
-#  """
 message_local = f"""\
 {verse}
 
