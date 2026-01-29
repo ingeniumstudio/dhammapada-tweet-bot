@@ -16,18 +16,18 @@ DEBUG = True if os.environ.get('DEBUG') else False
 # This file contains The Dhamapada in JSON format
 DHAMMAPADA_JSON_FILEPATH = f"{SCRIPT_PATH}/dhammapada.json"
 
+# This file contains the currently (last) posted verse
+VERSE_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.txt")
+
 # This file will hold the ids of the currently posted tweet(s), the which
 # will be deleted in the next time the script is executed
 PREVIOUS_IDS_FILEPATH = \
         os.path.expanduser("~/.dhammapada-tweet-bot.previous_ids")
 
-# This file contains the currently (last) posted verse
-LAST_VERSE_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.txt")
-
 
 def chunk_string_by_words(text, max_chars):
-    """ Chunk the text in words, so we can divide it into more tweets if it
-            doesn't fit into just one, because of X limitations.
+    """Chunk the text in words, so we can divide it into more tweets if it
+           doesn't fit into just one, because of X limitations
     """
 
     words = text.split(' ')
@@ -47,8 +47,8 @@ def chunk_string_by_words(text, max_chars):
 
 
 def get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
-    """ Gets ids of the previously posted tweets that are recorded in
-            file in `PREVIOUS_IDS_FILEPATH` for deletion.
+    """Gets ids of the previously posted tweets that are recorded in
+           file in `PREVIOUS_IDS_FILEPATH` for deletion
     """
 
     if not os.path.isfile(previous_ids_filepath):
@@ -61,12 +61,13 @@ def get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
 
 
 def set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
-    """ Locally writes the ids of the tweet(s) currently being posted to
-            file in `PREVIOUS_IDS_FILEPATH` for late deletion.
+    """Locally writes the ids of the tweet(s) currently being posted to
+           file in `PREVIOUS_IDS_FILEPATH` for late deletion
     """
 
-    # this line 1. converts a list[int] to a list[char] and 2. str.joins()
-    # that list of chars in a string, separated by a newline
+    # this line: 1. converts a list[int] to a list[char] and 2. str.join()'s
+    # that list of chars in a string, separated by a newline (this will be
+    # written to a file later)
     ids = str("\n").join([str(numeric) for numeric in id_list])
 
     with open(previous_ids_filepath, "w") as previous_ids_file:
@@ -75,18 +76,18 @@ def set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
     return ids
 
 
-def write_last_verse(verse, last_verse_file=LAST_VERSE_FILEPATH):
-    """ Writes de current verse being posted to the file in
-            `LAST_VERSE_FILEPATH`
+def write_last_verse(verse, verse_file=VERSE_FILEPATH):
+    """Writes de current verse being posted to the file in
+           `VERSE_FILEPATH`
     """
 
-    with open(last_verse_file, "w") as fd:
+    with open(verse_file, "w") as fd:
         fd.write(verse)
 
 
 def get_verse():
-    """ Gets a random verse from The Dhammapada, from the file in
-            `DHAMMAPADA_JSON_FILEPATH`.
+    """Gets a random verse from The Dhammapada, from the file in
+           `DHAMMAPADA_JSON_FILEPATH`
     """
 
     with open(DHAMMAPADA_JSON_FILEPATH, "r") as dhammapada_json_file:
@@ -99,8 +100,8 @@ def get_verse():
 
 
 def text_width(text):
-    """ Iterates over all the lines of the verse and return the number
-            of characters from the lenghtiest line; used for formatting.
+    """Iterates over all the lines of the verse and return the number
+           of characters from the lenghtiest line; used for formatting
     """
 
     lines = text.split('\n')
@@ -110,7 +111,7 @@ def text_width(text):
 
 
 verse_numbers, verse = get_verse()
-verses = str(", ").join([str(verse_number for verse_number in verse_numbers)])
+verses = str(", ").join([str(verse_number) for verse_number in verse_numbers])
 signature = f"— Dhammapada {verses}"
 
 line_size = text_width(text=verse)
@@ -138,7 +139,7 @@ message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
 
 chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
 
-write_last_verse(verse=message_local, last_verse_file=LAST_VERSE_FILEPATH)
+write_last_verse(verse=message_local, verse_file=VERSE_FILEPATH)
 
 client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                        consumer_secret=creds.CONSUMER_SECRET,
