@@ -101,15 +101,15 @@ class DhammapadaTweetBot:
         #  #                                         in_reply_to_tweet_id=id_list[-1])
         #  #          id_list.append(response.data['id'])  # pyright: ignore
 
-        # id(s) of the last tweet(s), to be deleted
-        #  previous_ids = self.get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
+        #  # id(s) of the last tweet(s), to be deleted
+        #  #  previous_ids = self.get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
 
-        # delete each of the past tweets
-        #  for item in previous_ids:  # if empty it will just do nothing
-        #      delete_response = client.delete_tweet(id=item)
+        #  # delete each of the past tweets
+        #  #  for item in previous_ids:  # if empty it will just do nothing
+        #  #      delete_response = client.delete_tweet(id=item)
 
-        # write the id(s) of our new tweet(s) for late deletion
-        #  self.set_new_ids(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
+        #  # write the id(s) of our new tweet(s) for late deletion
+        #  #  self.set_new_ids(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
         pass
 
     def get_random_verse(self):
@@ -196,12 +196,18 @@ class DhammapadaTweetBot:
         client = self.client
         previous_tweets_ids = self.previous_tweets_ids
 
+        deletion_responses = list()
+
         # delete each of the past tweets
         for item in previous_tweets_ids:  # if empty it will just do nothing
-            client.delete_tweet(id=item)
-            #  delete_response = client.delete_tweet(id=item)
+            response = client.delete_tweet(id=item)
+            deletion_responses.append(response)
 
-    def write_new_tweets_ids(self, previous_tweets_ids_filepath=\
+        self.deletion_responses = deletion_responses
+
+        return deletion_responses
+
+    def write_new_tweets_ids_to_local_file(self, previous_tweets_ids_filepath=\
                                         PREVIOUS_TWEETS_IDS_FILEPATH):
         """Locally writes the ids of the tweet(s) currently being posted to
                file in `PREVIOUS_TWEETS_IDS_FILEPATH` for late deletion
@@ -223,7 +229,7 @@ class DhammapadaTweetBot:
 
         return new_tweets_ids
 
-    def write_verse(self, verse_file=VERSE_FILEPATH):
+    def write_verse_to_local_file(self, verse_file=VERSE_FILEPATH):
         """Writes the current verse being posted to the file in
                `VERSE_FILEPATH`
         """
@@ -282,18 +288,13 @@ if __name__ == "__main__":
     bot = DhammapadaTweetBot()
 
     bot.get_random_verse()
-    print("bot.verse", bot.verse)
-    print("bot.verse_numbers", bot.verse_numbers)
-    print("bot.signature", bot.signature)
-
     bot.format_texts()
-    print("bot.formatted_texts", bot.formatted_texts)
-
-    bot.write_verse()
 
     if DEBUG:
         print_debug(bot=bot)
         exit(0)
+
+    bot.write_verse_to_local_file()
 
     bot.twitter_connect()
     bot.twitter_post()
@@ -301,62 +302,6 @@ if __name__ == "__main__":
     bot.get_previous_tweets_ids()
     bot.delete_previous_tweets()
 
-    bot.write_new_tweets_ids()
+    bot.write_new_tweets_ids_to_local_file()
 
 
-    #  verse_numbers, verse = get_verse()
-    #  verses = str(", ").join([str(verse_number) for verse_number in verse_numbers])
-    #  signature = f"— Dhammapada {verses}"
-
-    #  line_size = text_width(text=verse)
-    #  signature_lenght = len(signature)
-
-    #  message_twitter = f"""\
-    #  {verse}
-    #
-    #  {signature}\
-    #  """
-
-    #  message_local = f"""\
-    #  {verse}
-    #
-    #  {signature:>{line_size}}\
-    #  """
-
-    #  if DEBUG:
-    #      print("message_twitter", message_twitter, sep="\n\n", end="\n\n")
-    #      print("message_local", message_local, sep="\n\n", end="\n\n")
-    #      exit(0)
-
-    # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
-    #  message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
-    #
-    #  chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
-    #
-    #  write_verse(verse=message_local, verse_file=VERSE_FILEPATH)
-    #
-    #  client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
-    #                         consumer_secret=creds.CONSUMER_SECRET,
-    #                         access_token=creds.ACCESS_TOKEN,
-    #                         access_token_secret=creds.ACCESS_TOKEN_SECRET)
-    #
-    #  id_list = list()
-    #
-    #  for index, chunk in enumerate(chunks):
-    #      if index == 0:
-    #          response = client.create_tweet(text=chunk)
-    #          id_list.append(response.data['id'])  # pyright: ignore
-    #      else:
-    #          response = client.create_tweet(text=chunk,
-    #                                         in_reply_to_tweet_id=id_list[-1])
-    #          id_list.append(response.data['id'])  # pyright: ignore
-    #
-    #  # id(s) of the last tweet(s), to be deleted
-    #  previous_ids = get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
-    #
-    #  # delete each of the past tweets
-    #  for item in previous_ids:  # if empty it will just do nothing
-    #      delete_response = client.delete_tweet(id=item)
-    #
-    #  # write the id(s) of our new tweet(s) for late deletion
-    #  set_previous_id(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
