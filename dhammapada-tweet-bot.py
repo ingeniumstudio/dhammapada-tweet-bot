@@ -50,66 +50,6 @@ def print_debug(bot):
 class DhammapadaTweetBot:
 
     def __init__(self):
-        #  #  verse_numbers, verse = self.get_verse()
-        #  #  verses = str(", ").join([str(verse_number) for verse_number in verse_numbers])
-        #  #  signature = f"— Dhammapada {verses}"
-        #
-        #  #  self.verse = verse
-        #  #  self.verse_numbers = verse_numbers
-        #  #  self.signature = signature
-
-        #  #  line_size = self.text_width(text=verse)
-        #  #  signature_lenght = len(signature)
-        #
-        #  #  message_twitter = f"""\
-        #  #  {verse}
-        #  #
-        #  #  {signature}\
-        #  #  """
-        #
-        #  #  message_local = f"""\
-        #  #  {verse}
-        #  #
-        #  #  {signature:>{line_size}}\
-        #  #  """
-
-        #  #  if DEBUG:
-        #  #      print("message_twitter", message_twitter, sep="\n\n", end="\n\n")
-        #  #      print("message_local", message_local, sep="\n\n", end="\n\n")
-        #  #      exit(0)  # FIXME here
-
-        #  # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
-        #  #  message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
-
-        #  #  chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
-
-        #  #  self.write_verse(verse=message_local, verse_file=VERSE_FILEPATH)
-
-        #  #  client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
-        #  #                         consumer_secret=creds.CONSUMER_SECRET,
-        #  #                         access_token=creds.ACCESS_TOKEN,
-        #  #                         access_token_secret=creds.ACCESS_TOKEN_SECRET)
-
-        #  #  id_list = list()
-
-        #  #  for index, chunk in enumerate(chunks):
-        #  #      if index == 0:
-        #  #          response = client.create_tweet(text=chunk)
-        #  #          id_list.append(response.data['id'])  # pyright: ignore
-        #  #      else:
-        #  #          response = client.create_tweet(text=chunk,
-        #  #                                         in_reply_to_tweet_id=id_list[-1])
-        #  #          id_list.append(response.data['id'])  # pyright: ignore
-
-        #  # id(s) of the last tweet(s), to be deleted
-        #  #  previous_ids = self.get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
-
-        #  # delete each of the past tweets
-        #  #  for item in previous_ids:  # if empty it will just do nothing
-        #  #      delete_response = client.delete_tweet(id=item)
-
-        #  # write the id(s) of our new tweet(s) for late deletion
-        #  #  self.set_new_ids(id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
         pass
 
     def get_random_verse(self):
@@ -124,6 +64,7 @@ class DhammapadaTweetBot:
         self.signature = signature
 
     def format_texts(self):
+        # FIXME: put the chunk maker here
 
         verse = self.verse
         signature = self.signature
@@ -144,6 +85,8 @@ class DhammapadaTweetBot:
         self.formatted_texts = formatted_texts
 
     def twitter_connect(self):
+        """Connects to X API
+        """
 
         client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                                consumer_secret=creds.CONSUMER_SECRET,
@@ -152,6 +95,8 @@ class DhammapadaTweetBot:
         self.client = client
 
     def twitter_post(self):
+        """Posts to X API
+        """
 
         client = self.client
         message_twitter = self.formatted_texts["twitter"]
@@ -192,6 +137,8 @@ class DhammapadaTweetBot:
         return previous_tweets_ids
 
     def delete_previous_tweets(self):
+        """Deletes posts posted the previous time the bot ran
+        """
 
         client = self.client
         previous_tweets_ids = self.previous_tweets_ids
