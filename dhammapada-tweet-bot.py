@@ -49,7 +49,6 @@ def print_debug(bot):
 
 class DhammapadaTweetBot:
 
-    #  def __init__(self, DEBUG):
     def __init__(self):
         #  #  verse_numbers, verse = self.get_verse()
         #  #  verses = str(", ").join([str(verse_number) for verse_number in verse_numbers])
@@ -74,33 +73,33 @@ class DhammapadaTweetBot:
         #  #  {signature:>{line_size}}\
         #  #  """
 
-        #  if DEBUG:
-        #      print("message_twitter", message_twitter, sep="\n\n", end="\n\n")
-        #      print("message_local", message_local, sep="\n\n", end="\n\n")
-        #      exit(0)  # FIXME here
+        #  #  if DEBUG:
+        #  #      print("message_twitter", message_twitter, sep="\n\n", end="\n\n")
+        #  #      print("message_local", message_local, sep="\n\n", end="\n\n")
+        #  #      exit(0)  # FIXME here
 
-        # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
-        #  message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
+        #  # https://stackoverflow.com/questions/73537087/regex-to-capture-a-single-new-line-instance-but-not-2
+        #  #  message_no_breaks = re.sub('(.)\n(?!\n)', r'\1 ', message_twitter)
 
-        #  chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
+        #  #  chunks = chunk_string_by_words(text=message_no_breaks, max_chars=278)
 
-        #  self.write_verse(verse=message_local, verse_file=VERSE_FILEPATH)
+        #  #  self.write_verse(verse=message_local, verse_file=VERSE_FILEPATH)
 
-        #  client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
-        #                         consumer_secret=creds.CONSUMER_SECRET,
-        #                         access_token=creds.ACCESS_TOKEN,
-        #                         access_token_secret=creds.ACCESS_TOKEN_SECRET)
+        #  #  client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
+        #  #                         consumer_secret=creds.CONSUMER_SECRET,
+        #  #                         access_token=creds.ACCESS_TOKEN,
+        #  #                         access_token_secret=creds.ACCESS_TOKEN_SECRET)
 
-        #  id_list = list()
+        #  #  id_list = list()
 
-        #  for index, chunk in enumerate(chunks):
-        #      if index == 0:
-        #          response = client.create_tweet(text=chunk)
-        #          id_list.append(response.data['id'])  # pyright: ignore
-        #      else:
-        #          response = client.create_tweet(text=chunk,
-        #                                         in_reply_to_tweet_id=id_list[-1])
-        #          id_list.append(response.data['id'])  # pyright: ignore
+        #  #  for index, chunk in enumerate(chunks):
+        #  #      if index == 0:
+        #  #          response = client.create_tweet(text=chunk)
+        #  #          id_list.append(response.data['id'])  # pyright: ignore
+        #  #      else:
+        #  #          response = client.create_tweet(text=chunk,
+        #  #                                         in_reply_to_tweet_id=id_list[-1])
+        #  #          id_list.append(response.data['id'])  # pyright: ignore
 
         # id(s) of the last tweet(s), to be deleted
         #  previous_ids = self.get_previous_ids(previous_ids_filepath=PREVIOUS_IDS_FILEPATH)
@@ -127,11 +126,9 @@ class DhammapadaTweetBot:
     def format_texts(self):
 
         verse = self.verse
-        #  verse_numbers = self.verse_numbers
         signature = self.signature
 
         line_size = self.text_width(text=verse)
-        #  signature_lenght = len(signature)
 
         message_twitter = FORMAT_TWITTER.format(verse=verse,
                                                 signature=signature)
@@ -140,18 +137,6 @@ class DhammapadaTweetBot:
                                             signature=signature,
                                             line_size=line_size)
 
-        #  message_twitter = f"""\
-        #  {verse}
-        #
-        #  {signature}\
-        #  """
-
-        #  message_local = f"""\
-        #  {verse}
-        #
-        #  {signature:>{line_size}}\
-        #  """
-
         formatted_texts = {
                 "twitter": message_twitter,
                 "local": message_local,
@@ -159,6 +144,7 @@ class DhammapadaTweetBot:
         self.formatted_texts = formatted_texts
 
     def twitter_connect(self):
+
         client = tweepy.Client(consumer_key=creds.CONSUMER_KEY,
                                consumer_secret=creds.CONSUMER_SECRET,
                                access_token=creds.ACCESS_TOKEN,
@@ -166,6 +152,7 @@ class DhammapadaTweetBot:
         self.client = client
 
     def twitter_post(self):
+
         client = self.client
         message_twitter = self.formatted_texts["twitter"]
 
@@ -173,8 +160,6 @@ class DhammapadaTweetBot:
 
         chunks = self._chunk_string_by_words(text=message_no_breaks,
                                              max_chars=278)
-
-        #  client = self.client
 
         id_list = list()
 
@@ -186,6 +171,8 @@ class DhammapadaTweetBot:
                 response = client.create_tweet(text=chunk,
                                                in_reply_to_tweet_id=id_list[-1])
                 id_list.append(response.data['id'])  # pyright: ignore
+
+            self.id_list = id_list
 
     def get_previous_tweets_ids(self, previous_tweets_ids_filepath=\
                                         PREVIOUS_TWEETS_IDS_FILEPATH):
@@ -205,6 +192,7 @@ class DhammapadaTweetBot:
         return previous_tweets_ids
 
     def delete_previous_tweets(self):
+
         client = self.client
         previous_tweets_ids = self.previous_tweets_ids
 
@@ -213,11 +201,13 @@ class DhammapadaTweetBot:
             client.delete_tweet(id=item)
             #  delete_response = client.delete_tweet(id=item)
 
-    def set_new_tweets_ids(self, id_list, previous_tweets_ids_filepath=\
+    def write_new_tweets_ids(self, previous_tweets_ids_filepath=\
                                         PREVIOUS_TWEETS_IDS_FILEPATH):
         """Locally writes the ids of the tweet(s) currently being posted to
                file in `PREVIOUS_TWEETS_IDS_FILEPATH` for late deletion
         """
+
+        id_list = self.id_list
 
         # this line: 1. converts a list[int] to a list[char] and 2. str.join()'s
         # that list of chars in a string, separated by a newline (this will be
@@ -233,13 +223,11 @@ class DhammapadaTweetBot:
 
         return new_tweets_ids
 
-    #  def write_verse(self, verse, verse_file=VERSE_FILEPATH):
-    def write_verse(self):
+    def write_verse(self, verse_file=VERSE_FILEPATH):
         """Writes the current verse being posted to the file in
                `VERSE_FILEPATH`
         """
 
-        verse_file = VERSE_FILEPATH
         verse = self.formatted_texts['local']
 
         with open(verse_file, "w") as fd:
@@ -312,6 +300,8 @@ if __name__ == "__main__":
 
     bot.get_previous_tweets_ids()
     bot.delete_previous_tweets()
+
+    bot.write_new_tweets_ids()
 
 
     #  verse_numbers, verse = get_verse()
