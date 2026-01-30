@@ -290,9 +290,9 @@ if __name__ == "__main__":
     bot.get_random_verse()
     bot.format_texts()
 
-    if DEBUG:
-        print_debug(bot=bot)
-        exit(0)
+    #  if DEBUG:
+    #      print_debug(bot=bot)
+    #      exit(0)
 
     bot.write_verse_to_local_file()
 
