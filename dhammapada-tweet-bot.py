@@ -6,7 +6,6 @@ import random
 import re
 
 import tweepy
-from tweepy import client
 
 import secrets_xapi as creds
 
@@ -37,26 +36,6 @@ FORMAT_LOCAL = """\
 
 {signature:>{line_size}}\
 """
-
-#  def chunk_string_by_words(text, max_chars):
-#      """Chunk the text in words, so we can divide it into more tweets if it
-#             doesn't fit into just one, because of X limitations
-#      """
-#
-#      words = text.split(' ')
-#      chunks = []
-#      current_chunk = ""
-#      for word in words:
-#          if not current_chunk:
-#              current_chunk = word
-#          elif len(current_chunk) + len(word) + 1 <= max_chars:
-#              current_chunk += " " + word
-#          else:
-#              chunks.append(current_chunk)
-#              current_chunk = word
-#      if current_chunk:
-#          chunks.append(current_chunk)
-#      return chunks
 
 
 def print_debug(bot):
@@ -234,7 +213,7 @@ class DhammapadaTweetBot:
             client.delete_tweet(id=item)
             #  delete_response = client.delete_tweet(id=item)
 
-    def set_new_ids(self, id_list, previous_tweets_ids_filepath=\
+    def set_new_tweets_ids(self, id_list, previous_tweets_ids_filepath=\
                                         PREVIOUS_TWEETS_IDS_FILEPATH):
         """Locally writes the ids of the tweet(s) currently being posted to
                file in `PREVIOUS_TWEETS_IDS_FILEPATH` for late deletion
@@ -243,21 +222,25 @@ class DhammapadaTweetBot:
         # this line: 1. converts a list[int] to a list[char] and 2. str.join()'s
         # that list of chars in a string, separated by a newline (this will be
         # written to a file later)
-        new_ids = str("\n").join([str(numeric) for numeric in id_list])
+        new_tweets_ids = str("\n").join([str(numeric) for numeric in id_list])
 
         with open(previous_tweets_ids_filepath,
                   "w") as previous_tweets_ids_file:
 
-            previous_tweets_ids_file.write(new_ids)
+            previous_tweets_ids_file.write(new_tweets_ids)
 
-        self.new_ids = new_ids
+        self.new_tweets_ids = new_tweets_ids
 
-        return new_ids
+        return new_tweets_ids
 
-    def write_verse(self, verse, verse_file=VERSE_FILEPATH):
+    #  def write_verse(self, verse, verse_file=VERSE_FILEPATH):
+    def write_verse(self):
         """Writes the current verse being posted to the file in
                `VERSE_FILEPATH`
         """
+
+        verse_file = VERSE_FILEPATH
+        verse = self.formatted_texts['local']
 
         with open(verse_file, "w") as fd:
             fd.write(verse)
@@ -318,15 +301,17 @@ if __name__ == "__main__":
     bot.format_texts()
     print("bot.formatted_texts", bot.formatted_texts)
 
+    bot.write_verse()
+
     if DEBUG:
         print_debug(bot=bot)
-        exit(0)  # FIXME here
+        exit(0)
 
     bot.twitter_connect()
     bot.twitter_post()
 
     bot.get_previous_tweets_ids()
-    #  bod.delete_previous_tweets
+    bot.delete_previous_tweets()
 
 
     #  verse_numbers, verse = get_verse()
