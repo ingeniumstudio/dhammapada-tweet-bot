@@ -22,8 +22,8 @@ VERSE_FILEPATH = os.path.expanduser("~/.dhammapada-tweet-bot.txt")
 
 # This file will hold the ids of the currently posted tweet(s), the which
 # will be deleted in the next time the script is executed
-PREVIOUS_IDS_FILEPATH = \
-        os.path.expanduser("~/.dhammapada-tweet-bot.previous_ids")
+PREVIOUS_TWEETS_IDS_FILEPATH = \
+        os.path.expanduser("~/.dhammapada-tweet-bot.previous_tweets_ids")
 
 
 FORMAT_TWITTER = """\
@@ -57,6 +57,15 @@ FORMAT_LOCAL = """\
 #      if current_chunk:
 #          chunks.append(current_chunk)
 #      return chunks
+
+
+def print_debug(bot):
+
+    print("message_twitter", bot.formatted_texts['twitter'], sep="\n\n",
+          end="\n\n")
+
+    print("message_local", bot.formatted_texts['local'], sep="\n\n",
+          end="\n\n")
 
 
 class DhammapadaTweetBot:
@@ -128,7 +137,8 @@ class DhammapadaTweetBot:
     def get_random_verse(self):
 
         verse_numbers, verse = self.get_verse()
-        verses = str(", ").join([str(verse_number) for verse_number in verse_numbers])
+        verses = str(", ").join([str(verse_number)
+                                 for verse_number in verse_numbers])
         signature = f"— Dhammapada {verses}"
 
         self.verse = verse
@@ -198,33 +208,36 @@ class DhammapadaTweetBot:
                                                in_reply_to_tweet_id=id_list[-1])
                 id_list.append(response.data['id'])  # pyright: ignore
 
-    def delete_previous_tweets(self):
-        client = self.client
-        previous_ids = self.previous_ids
-
-        # delete each of the past tweets
-        for item in previous_ids:  # if empty it will just do nothing
-            delete_response = client.delete_tweet(id=item)
-
-    def get_previous_ids(self, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
+    def get_previous_tweets_ids(self, previous_tweets_ids_filepath=\
+                                        PREVIOUS_TWEETS_IDS_FILEPATH):
         """Gets ids of the previously posted tweets that are recorded in
-               file in `PREVIOUS_IDS_FILEPATH` for deletion
+               file in `PREVIOUS_TWEETS_IDS_FILEPATH` for deletion
         """
 
-        if not os.path.isfile(previous_ids_filepath):
+        if not os.path.isfile(previous_tweets_ids_filepath):
             return list()  # empty list if file still doesn't exist
 
-        with open(previous_ids_filepath, "r") as previous_ids_file:
-            previous_ids = [item.strip()
-                            for item in previous_ids_file.readlines()]
+        with open(previous_tweets_ids_filepath, "r") as previous_tweets_ids_file:
+            previous_tweets_ids = [item.strip()
+                            for item in previous_tweets_ids_file.readlines()]
 
-        self.previous_ids = previous_ids
+        self.previous_tweets_ids = previous_tweets_ids
 
-        return previous_ids
+        return previous_tweets_ids
 
-    def set_new_ids(self, id_list, previous_ids_filepath=PREVIOUS_IDS_FILEPATH):
+    def delete_previous_tweets(self):
+        client = self.client
+        previous_tweets_ids = self.previous_tweets_ids
+
+        # delete each of the past tweets
+        for item in previous_tweets_ids:  # if empty it will just do nothing
+            client.delete_tweet(id=item)
+            #  delete_response = client.delete_tweet(id=item)
+
+    def set_new_ids(self, id_list, previous_tweets_ids_filepath=\
+                                        PREVIOUS_TWEETS_IDS_FILEPATH):
         """Locally writes the ids of the tweet(s) currently being posted to
-               file in `PREVIOUS_IDS_FILEPATH` for late deletion
+               file in `PREVIOUS_TWEETS_IDS_FILEPATH` for late deletion
         """
 
         # this line: 1. converts a list[int] to a list[char] and 2. str.join()'s
@@ -232,8 +245,10 @@ class DhammapadaTweetBot:
         # written to a file later)
         new_ids = str("\n").join([str(numeric) for numeric in id_list])
 
-        with open(previous_ids_filepath, "w") as previous_ids_file:
-            previous_ids_file.write(new_ids)
+        with open(previous_tweets_ids_filepath,
+                  "w") as previous_tweets_ids_file:
+
+            previous_tweets_ids_file.write(new_ids)
 
         self.new_ids = new_ids
 
@@ -296,15 +311,22 @@ if __name__ == "__main__":
     bot = DhammapadaTweetBot()
 
     bot.get_random_verse()
-
     print("bot.verse", bot.verse)
     print("bot.verse_numbers", bot.verse_numbers)
     print("bot.signature", bot.signature)
 
     bot.format_texts()
-
     print("bot.formatted_texts", bot.formatted_texts)
 
+    if DEBUG:
+        print_debug(bot=bot)
+        exit(0)  # FIXME here
+
+    bot.twitter_connect()
+    bot.twitter_post()
+
+    bot.get_previous_tweets_ids()
+    #  bod.delete_previous_tweets
 
 
     #  verse_numbers, verse = get_verse()
