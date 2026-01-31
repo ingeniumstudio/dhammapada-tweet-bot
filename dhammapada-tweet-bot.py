@@ -11,7 +11,7 @@ import secrets_xapi as creds
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-DEBUG = True if os.environ.get('DEBUG') else False
+#  DEBUG = True if os.environ.get('DEBUG') else False  # not implemented tho
 
 # This file contains The Dhamapada in JSON format
 DHAMMAPADA_JSON_FILEPATH = f"{SCRIPT_PATH}/dhammapada.json"
@@ -236,10 +236,6 @@ if __name__ == "__main__":
 
     bot.get_random_verse()
     bot.format_texts()
-
-    #  if DEBUG:
-    #      print_debug(bot=bot)
-    #      exit(0)
 
     bot.write_verse_to_local_file()
 
